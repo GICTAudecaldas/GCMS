@@ -1,0 +1,27 @@
+En esta carpeta se encuentran los códigos para realizar el pre-procesamiento de los .CDFs del GCMS. Para esto utilizamos la librería de Python PyMassSpec.
+En el archivo step1.py se realiza lo siguiente:
+1. El suavizado con: ic_smooth = savitzky_golay(ic)
+2. La correción de linea base con: ic_bc = tophat(ic_smooth)
+3. La deconvolución y selección de picos con: peak_list = BillerBiemann(im, points=9, scans=2)
+4. Filtrado de picos por % de intensidad del pico más intenso y ruido con : filtered_peak_list=rel_threshold(peak_list, percent=2) y filtered_peak_list_by_noise = num_ions_threshold(filtered_peak_list, n=3, cutoff=noise_level)
+
+Luego, para asegurarnos que todos los experimentos tengan el mismo rango de masas, utilizamos peak.crop_mass(mass_min,mass_max). 
+Se puede también eliminar masas que desde un inicio identifiquemos como innecesarias, p. ej. 73 y 147 típicas del sangrado de columna con : peak.null_mass(problem_mass).
+
+Los pasos anteriores pueden ser inhabilitados utilizando un '#' al inicio de la línea de código, o ser modificado a conveniencia (revisar manual de la librería PyMassSpec en esta carpeta)
+
+Para obtener los TIC antes y después de este procesado utilizamos: tic = data.tic y tic_clean=im.tic. Para guardarlos como formato .csv usamos el método .write().
+Así facilmente los importamos en excel o en origin especificando que van separados por un espacio, y se grafican.
+
+De esto, vamos a obtener un archivo .expr por cada .CDF, que será utilizado en el paso de alineación. 
+
+Para la alineación se utiliza un algoritmo de alineación dinámica (ver artículo Robinson2013 en esta carpeta).
+Los .expr se alimentan al código, y se puede realizar una alineación general ó una alineación interna seguida de una alineación externa.
+
+En el archivo step2general.py esta el código para la alineación interna. Los parámetros claves son Dw y Gw que muestran el umbral en tiempo de retención (s) para la 
+alineación y la penalización por gaps (revisar el artículo Robinson2013 para mayor claridad). 
+En el archivo step2internal_and_external.py esta el código para primero realizar una alineación interna y luego una externa. Esta se recomienda cuando se quiere
+alinear réplicas de diferentes ensayos. 
+
+De esto, tendrémos como resultado un archivo .CSV con los tiempos re retención, la relación masa/carga, y las áreas del pico cromatográfico por cada archivo. CDF alimentado 
+(es decir, cada .expr). 
