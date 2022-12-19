@@ -1,4 +1,7 @@
 En esta carpeta se encuentran los códigos para realizar el pre-procesamiento de los .CDFs del GCMS. Para esto utilizamos la librería de Python PyMassSpec.
+En el archivo preliminar.py se encuentra el código que imprime aspectos generales de cada uno de los .CDFs, como la ventana de tiempo, la masa máxima y la masa mínima detectada, entre otros. 
+De acá es importante registrar la masa mínima y máxima para utilizarla posteriormente (ver linea 12).
+
 En el archivo step1.py se realiza lo siguiente:
 1. El suavizado con: ic_smooth = savitzky_golay(ic)
 2. La correción de linea base con: ic_bc = tophat(ic_smooth)
